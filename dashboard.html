@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Dashboard - PAI Learning Center</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="logo">
+            <img src="images/logo.png" alt="PAI Learning Center">
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+
+    </nav>
+
+    <!-- Dashboard -->
+    <section class="dashboard">
+
+        <div class="dashboard-card">
+
+            <h2 id="welcomeText">Welcome</h2>
+
+            <p>
+                <strong>Student Name:</strong>
+                <span id="studentName">Loading...</span>
+            </p>
+
+            <p>
+                <strong>Class:</strong>
+                <span id="studentClass">Loading...</span>
+            </p>
+
+            <div class="fee-status">
+                Pending Fees: ₹<span id="fees">Loading...</span>
+            </div>
+
+            <div style="margin-top:30px; display:flex; gap:20px; flex-wrap:wrap;">
+
+             <a href="payment.html" class="btn-primary">
+    Pay Fees
+</a>   
+
+                <a href="#" class="btn-secondary">
+                    Download Receipt
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+
+import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+}
+from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc
+}
+from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB3GY3K639rzGUpF345VOxHMr_37GBYxWg",
+    authDomain: "pai-learning-centre.firebaseapp.com",
+    projectId: "pai-learning-centre",
+    storageBucket: "pai-learning-centre.firebasestorage.app",
+    messagingSenderId: "908265175136",
+    appId: "1:908265175136:web:cbdccb6784c1359e236b05"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async (user) => {
+
+    if (user) {
+
+        document.getElementById("welcomeText").innerText =
+            "Welcome, " + user.email;
+
+        const docRef = doc(db, "students", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+
+            const data = docSnap.data();
+
+            document.getElementById("studentName").innerText =
+                data.studentName;
+
+            document.getElementById("studentClass").innerText =
+                data.studentClass;
+
+            document.getElementById("fees").innerText =
+                data.fees;
+        }
+
+    } else {
+        window.location.href = "login.html";
+    }
+
+});
+
+window.logout = function () {
+
+    signOut(auth).then(() => {
+        window.location.href = "login.html";
+    });
+
+};
+
+</script>
+
+</body>
+</html>
