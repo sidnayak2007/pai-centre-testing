@@ -146,8 +146,8 @@ onAuthStateChanged(auth, async (user) => {
                 data.fees;
 
             const upi =
-"upi://pay?pa=shailajapai15@oksbi&pn=Shailaja%20Pai&tn=Tuition%20Fees&cu=INR&am=" +
-data.fees;
+                "upi://pay?pa=shailajapai@oksbi&pn=SHAILAJA PAI&am=" +
+                data.fees;
 
             document.getElementById("gpayLink").href =
                 upi;
