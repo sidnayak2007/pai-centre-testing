@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Payment - PAI Learning Center</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="logo">
+            <img src="images/logo.png" alt="PAI Learning Center">
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="#" onclick="history.back()">Back</a></li>
+        </ul>
+
+    </nav>
+
+    <!-- Payment Section -->
+    <section class="dashboard">
+
+        <div class="dashboard-card">
+
+            <h2>Fee Payment</h2>
+
+            <p>
+                <strong>Student:</strong>
+                <span id="studentName">Loading...</span>
+            </p>
+
+            <p>
+                <strong>Class:</strong>
+                <span id="studentClass">Loading...</span>
+            </p>
+
+            <div class="fee-status">
+                Amount Due: ₹<span id="amount">Loading...</span>
+            </div>
+
+            <br>
+
+            <h3>Select Payment Method</h3>
+
+            <br>
+
+            <a id="gpayLink" class="btn-primary">
+                Google Pay
+            </a>
+
+            <br><br>
+
+            <a id="phonepeLink" class="btn-secondary">
+                PhonePe
+            </a>
+
+            <br><br>
+
+            <button class="btn-primary" onclick="cashPayment()">
+                Cash In Class
+            </button>
+
+            <br><br>
+
+            <div class="fee-status">
+                Payment Status:
+                <span id="paymentStatus">
+                    Pending
+                </span>
+            </div>
+
+            <br>
+
+            <button class="btn-primary" onclick="paymentDone()">
+                I Have Paid
+            </button>
+
+            <button class="btn-secondary" onclick="location.reload()">
+                Try Again
+            </button>
+
+        </div>
+
+    </section>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+
+import {
+    getAuth,
+    onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc
+}
+from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB3GY3K639rzGUpF345VOxHMr_37GBYxWg",
+    authDomain: "pai-learning-centre.firebaseapp.com",
+    projectId: "pai-learning-centre",
+    storageBucket: "pai-learning-centre.firebasestorage.app",
+    messagingSenderId: "908265175136",
+    appId: "1:908265175136:web:cbdccb6784c1359e236b05"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async (user) => {
+
+    if (user) {
+
+        const docRef = doc(db, "students", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+
+            const data = docSnap.data();
+
+            document.getElementById("studentName").innerText =
+                data.studentName;
+
+            document.getElementById("studentClass").innerText =
+                data.studentClass;
+
+            document.getElementById("amount").innerText =
+                data.fees;
+
+            const upi =
+                "upi://pay?pa=shailajapai@okicici&pn=PAI Learning Center&am=" +
+                data.fees;
+
+            document.getElementById("gpayLink").href =
+                upi;
+
+            document.getElementById("phonepeLink").href =
+                upi;
+        }
+
+    } else {
+
+        window.location.href = "login.html";
+
+    }
+
+});
+
+window.paymentDone = function () {
+
+    document.getElementById("paymentStatus").innerText =
+        "Pending Verification";
+
+};
+
+window.cashPayment = function () {
+
+    document.getElementById("paymentStatus").innerText =
+        "Cash In Class";
+
+};
+
+</script>
+
+</body>
+</html>
